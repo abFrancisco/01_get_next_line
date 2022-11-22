@@ -6,11 +6,46 @@
 /*   By: falves-b <falves-b@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/22 11:36:32 by falves-b          #+#    #+#             */
-/*   Updated: 2022/11/22 15:23:17 by falves-b         ###   ########.fr       */
+/*   Updated: 2022/11/22 17:40:53 by falves-b         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
+
+size_t	ft_strlen(const char *s)
+{
+	int	i;
+
+	i = 0;
+	while (s[i] != '\0')
+		i++;
+	return (i);
+}
+
+size_t	ft_strlcat(char *dst, const char *src, size_t size)
+{
+	size_t	dst_len;
+	size_t	src_len;
+	size_t	i;
+
+	if (!dst && !size)
+		return (0);
+	dst_len = ft_strlen(dst);
+	src_len = ft_strlen(src);
+	i = 0;
+	if (size < dst_len + 1)
+		return (size + src_len);
+	if (size > dst_len + 1)
+	{
+		while (src[i] != '\0' && dst_len + 1 + i < size)
+		{
+			dst[dst_len + i] = src[i];
+			i++;
+		}
+	}
+	dst[dst_len + i] = '\0';
+	return (dst_len + src_len);
+}
 
 char	*get_next_line(int fd)
 {
@@ -18,30 +53,24 @@ char	*get_next_line(int fd)
 	char		*buff_start;
 	char		*match;
 	int			eol;
-	static int	i;
 
-	buff = malloc(10000);
-	match = (NULL);
+	buff_start = calloc(1, 10000000);
+	match = NULL;
 	eol = 1;
-	if (!i)
-		i = 0;
 	while (eol > 0)
 	{
-		eol = read(fd, buff[i], BUFFER_SIZE);
-		match = memchr(buff[i], '\n', BUFFER_SIZE);
+		buff = calloc(1, BUFFER_SIZE + 7);
+		eol = read(fd, buff, BUFFER_SIZE);
+		match = memchr(buff, '\n', BUFFER_SIZE);
 		if (match)
-		{
-			i = i + (match - buff[i] + 1);
 			eol = 0;
-		}
-		else
-			i = i + BUFFER_SIZE;
+		ft_strlcat(buff_start, buff, ft_strlen(buff_start) + BUFFER_SIZE + 1);
+		free(buff);
 	}
-	free(buff);
-	return (buff[i]);
+	return (buff_start);
 }
 
-int main()
+/* int main()
 {
 	char	*filePath1 = "teste";
 	char	*line;
@@ -49,17 +78,14 @@ int main()
 	int		i;
 
 	i = 0;
-
-	//filePath1 = argv[1];
 	fd1 = open(filePath1, O_RDONLY);
-	while (i < 5)
+	while (i < 6)
 	{
 		line = get_next_line(fd1);
-		printf("%s", line);
+		printf("line %i = %s", i, line);
 		free(line);
-		
 		i++;
 	}
 	close(fd1);
 	return (0);
-}
+} */
