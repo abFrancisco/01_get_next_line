@@ -6,7 +6,7 @@
 /*   By: falves-b <falves-b@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/22 11:36:32 by falves-b          #+#    #+#             */
-/*   Updated: 2022/11/29 00:03:18 by falves-b         ###   ########.fr       */
+/*   Updated: 2022/11/30 00:18:01 by falves-b         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,32 +120,55 @@ size_t	ft_strlcat(char *dst, const char *src, size_t size)
 	return (dst_len + src_len);
 }
 
+void	*ft_memmove(void *dest, const void *src, size_t n)
+{
+	char	*tmp_dest;
+	char	*tmp_src;
+
+	tmp_dest = (char *)dest;
+	tmp_src = (char *)src;
+	if (dest == src || n == 0)
+		return (dest);
+	if (dest < src)
+		while (n--)
+			*tmp_dest++ = *tmp_src++;
+	else
+		while (n--)
+			tmp_dest[n] = tmp_src[n];
+	return (dest);
+}
+
 char	*get_next_line(int fd)
 {
 	char		*chunk;
 	static char	*line;
 	char		*dup;
 	char		*sep;
-	int			read_bytes;
+	int			flag;
 
-	
+	dup = calloc(1000, 1);
 	if (!line)
 		line = calloc(1, 1000);
-	//printf("%s\n", line);
-	while (1)
+	flag = 1;
+	if (strchr(line, '\n'))
 	{
-		chunk = calloc(1, BUFFER_SIZE);
-		read_bytes = read(fd, chunk, BUFFER_SIZE);
-		if (!read_bytes)
-			break ;
-		sep = ft_strchrnul(chunk, '\n');
-		ft_strlcat(line, chunk, ft_strlen(line) + sep - chunk + 1);
-		if (chunk - sep < BUFFER_SIZE)
-			break ;
+		sep = ft_strchrnul(line, '\n');
 	}
-	sep = ft_strchrnul(line, '\n');
-	dup = ft_strdup(line);
-	ft_strlcpy(line, sep + 1, ft_strlen(sep) + 1);
+	else
+	{
+		while (flag)
+		{
+			chunk = calloc(1, BUFFER_SIZE);
+			flag = read(fd, chunk, BUFFER_SIZE);
+			sep = ft_strchrnul(chunk, '\n');
+			ft_strlcat(line, chunk, ft_strlen(line) + sep - chunk + 2);
+			if (sep - chunk < BUFFER_SIZE)
+				flag = 0;
+		}
+	}
+	//dup = ft_strdup(line);
+	ft_strlcpy(dup, line, sep - line + 2);//causes segmentation fault because dup doesnt have enough space
+	ft_memmove(line, sep + 1, ft_strlen(sep));
 	return (dup);
 }
 
@@ -156,13 +179,12 @@ int main()
 	int		fd1;
 	int		i;
 
-	
 	i = 0;
 	fd1 = open(filePath1, O_RDONLY);
 	while (i < 10)
 	{
 		line = get_next_line(fd1);
-		printf("%s\n", line);
+		printf("line %i = %s", i, line);
 		free(line);
 		i++;
 	}
