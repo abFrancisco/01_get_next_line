@@ -6,7 +6,7 @@
 /*   By: falves-b <falves-b@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/22 11:36:32 by falves-b          #+#    #+#             */
-/*   Updated: 2022/11/30 00:18:01 by falves-b         ###   ########.fr       */
+/*   Updated: 2022/11/30 16:14:30 by falves-b         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -146,14 +146,14 @@ char	*get_next_line(int fd)
 	char		*sep;
 	int			flag;
 
-	dup = calloc(1000, 1);
+	dup = calloc(500,1);
+	flag = 1;
+	//printf("line a = %s\n", line);
 	if (!line)
 		line = calloc(1, 1000);
-	flag = 1;
+	//printf("line b = %s\n", line);
 	if (strchr(line, '\n'))
-	{
 		sep = ft_strchrnul(line, '\n');
-	}
 	else
 	{
 		while (flag)
@@ -161,14 +161,15 @@ char	*get_next_line(int fd)
 			chunk = calloc(1, BUFFER_SIZE);
 			flag = read(fd, chunk, BUFFER_SIZE);
 			sep = ft_strchrnul(chunk, '\n');
-			ft_strlcat(line, chunk, ft_strlen(line) + sep - chunk + 2);
+			ft_strlcat(line, chunk, ft_strlen(line) + BUFFER_SIZE);
 			if (sep - chunk < BUFFER_SIZE)
 				flag = 0;
 		}
 	}
-	//dup = ft_strdup(line);
-	ft_strlcpy(dup, line, sep - line + 2);//causes segmentation fault because dup doesnt have enough space
-	ft_memmove(line, sep + 1, ft_strlen(sep));
+	//dup = strndup(line, sep - line + 1);
+	ft_strlcpy(dup, line, sep - line);//causes segmentation fault because dup doesnt have enough space
+	ft_memmove(line, sep + 1, sep - line);
+	//printf("line c = %s\n", line);
 	return (dup);
 }
 
@@ -185,9 +186,9 @@ int main()
 	{
 		line = get_next_line(fd1);
 		printf("line %i = %s", i, line);
-		free(line);
 		i++;
 	}
+	free(line);
 	close(fd1);
 	return (0);
 }
@@ -257,7 +258,7 @@ char	*get_next_line(int fd)
 	int			fd_read;
 	static char	*start_str;
 
-	if (fd < 0 || BUFFER_SIZE <= 0)
+	if (fd < 0 || BUFFER_SIZE <= 0)printf("line a = %s", line);
 		return (NULL);
 	fd_read = 1;
 	tmp = (char *)malloc(1 + BUFFER_SIZE * sizeof(char));
