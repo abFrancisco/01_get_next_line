@@ -6,7 +6,7 @@
 /*   By: falves-b <falves-b@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/22 11:36:32 by falves-b          #+#    #+#             */
-/*   Updated: 2022/12/06 13:28:00 by falves-b         ###   ########.fr       */
+/*   Updated: 2022/12/06 14:52:25 by falves-b         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -142,27 +142,36 @@ char	*get_line(char *line, int fd)
 {
 	char	*buffer;
 	int		i;
+	int		bytes_read;
+	int		offset;
 
 	i = 0;
-	
-	if (!line)
-		line = calloc(1, 20000);
-	else if (strchr(line, '\n'))
-		ft_memmove(line, strchr(line, '\n') + 1, ft_strchrnul(line, '\0') - (strchr(line, '\n')));
-	else if (ft_strchrnul(line, '\n'))
+	offset = 0;
+	buffer = calloc(1, BUFFER_SIZE + 1);
+	bytes_read = read(fd, buffer, BUFFER_SIZE);
+	if (!bytes_read && (!line || (ft_strchrnul(line, '\0') - ft_strchrnul(line, '\n')) <= 1))
 	{
 		free(line);
+		free(buffer);
 		return (NULL);
 	}
-	buffer = calloc(1, BUFFER_SIZE + 1);
-	while (read(fd, buffer, BUFFER_SIZE))
+	else if (!line)
+		line = calloc(1, 10000000);
+	else if (strchr(line, '\n'))
 	{
-		ft_memmove((line + (i++ * BUFFER_SIZE)), buffer, BUFFER_SIZE);
+		ft_memmove(line, strchr(line, '\n') + 1, ft_strchrnul(line, '\0') - (strchr(line, '\n')));
+		offset = ft_strlen(line);
+		bzero(line + offset, BUFFER_SIZE - offset);
+	}
+	while (bytes_read)
+	{
+		ft_memmove((line + (i++ * BUFFER_SIZE)) + offset, buffer, BUFFER_SIZE);
 		if (strchr(buffer, '\n'))
 			break ;
-		free(buffer);
-		buffer = calloc(1, BUFFER_SIZE + 1);
+		bzero(buffer, BUFFER_SIZE + 1);
+		bytes_read = read(fd, buffer, BUFFER_SIZE);
 	}
+	line[(i*BUFFER_SIZE) + offset] = '\0';
 	free(buffer);
 	return (line);
 }
@@ -181,7 +190,7 @@ char	*get_next_line(int fd)
 	return (dup);
 }
 
-int main()
+/* int main()
 {
 	char	*filePath1 = "teste";
 	char	*line;
@@ -199,4 +208,4 @@ int main()
 	}
 	close(fd1);
 	return (0);
-}
+} */
