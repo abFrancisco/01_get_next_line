@@ -6,7 +6,7 @@
 /*   By: falves-b <falves-b@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/22 11:36:32 by falves-b          #+#    #+#             */
-/*   Updated: 2022/12/06 14:52:25 by falves-b         ###   ########.fr       */
+/*   Updated: 2022/12/06 15:53:18 by falves-b         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -156,7 +156,7 @@ char	*get_line(char *line, int fd)
 		return (NULL);
 	}
 	else if (!line)
-		line = calloc(1, 10000000);
+		line = calloc(1, 100000000);
 	else if (strchr(line, '\n'))
 	{
 		ft_memmove(line, strchr(line, '\n') + 1, ft_strchrnul(line, '\0') - (strchr(line, '\n')));
@@ -190,7 +190,7 @@ char	*get_next_line(int fd)
 	return (dup);
 }
 
-/* int main()
+int main()
 {
 	char	*filePath1 = "teste";
 	char	*line;
@@ -208,4 +208,4 @@ char	*get_next_line(int fd)
 	}
 	close(fd1);
 	return (0);
-} */
+}
