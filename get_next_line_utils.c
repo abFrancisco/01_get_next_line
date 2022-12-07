@@ -6,19 +6,36 @@
 /*   By: falves-b <falves-b@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/07 13:05:34 by falves-b          #+#    #+#             */
-/*   Updated: 2022/12/07 13:14:07 by falves-b         ###   ########.fr       */
+/*   Updated: 2022/12/07 15:20:14 by falves-b         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "get_next_line.h"
 
-/*void	*ft_calloc(size_t nmemb, size_t size)
+size_t	ft_strlen(const char *s)
 {
-	void	*mem;
+	int	i;
+
+	i = 0;
+	while (s[i] != '\0')
+		i++;
+	return (i);
+}
+
+//i put memset inside calloc to save functions
+void	*ft_calloc(size_t nmemb, size_t size)
+{
+	void			*mem;
+	unsigned char	*tmp;
+	size_t			n;
 
 	mem = malloc(nmemb * size);
 	if (!mem)
 		return (NULL);
-	ft_memset(mem, 0, nmemb * size);
+	tmp = (unsigned char *)mem;
+	n = nmemb * size;
+	while (n--)
+		*tmp++ = 0;
 	return (mem);
 }
 
@@ -35,7 +52,7 @@ char	*ft_strchr(const char *s, int c)
 	return ((void *)0);
 }
 
-static char	*ft_strchrnul(const char *s, int c)
+char	*ft_strchrnul(const char *s, int c)
 {
 	char	*ptr;
 
@@ -45,15 +62,24 @@ static char	*ft_strchrnul(const char *s, int c)
 	return (ptr);
 }
 
-char	*ft_strdup(const char *s)// CHANGE THIS TO STRNDUP
+char	*ft_strndup(const char *s, size_t size)
 {
-	int		size;
-	char	*mem;
+	char			*mem;
+	unsigned int	i;
+	int				strlen;
 
-	size = ft_strlen(s) + 1;
-	mem = malloc(size);
+	mem = ft_calloc(1, size + 1);
 	if (!mem)
 		return (NULL);
-	ft_strlcpy(mem, s, size);
+	strlen = 0;
+	while (s[strlen] != '\0')
+		strlen++;
+	i = 0;
+	while (i < size && s[i] != '\0')
+	{
+		mem[i] = s[i];
+		i++;
+	}
+	mem[i] = '\0';
 	return (mem);
-}*/
+}

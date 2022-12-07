@@ -6,105 +6,11 @@
 /*   By: falves-b <falves-b@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/22 11:36:32 by falves-b          #+#    #+#             */
-/*   Updated: 2022/12/07 13:32:36 by falves-b         ###   ########.fr       */
+/*   Updated: 2022/12/07 15:37:55 by falves-b         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
-#include <fcntl.h>
-
-
-
-size_t	ft_strlen(const char *s)
-{
-	int	i;
-
-	i = 0;
-	while (s[i] != '\0')
-		i++;
-	return (i);
-}
-
-size_t	ft_strlcpy(char *dst, const char *src, size_t size)
-{
-	unsigned int	i;
-	int				strlen;
-
-	strlen = 0;
-	while (src[strlen] != '\0')
-		strlen++;
-	i = 0;
-	if (size == 0)
-		return (strlen);
-	while (i < size - 1 && src[i] != '\0')
-	{
-		dst[i] = src[i];
-		i++;
-	}
-	dst[i] = '\0';
-	return (strlen);
-}
-
-void	*ft_memset(void *s, int c, size_t n)
-{
-	unsigned char	*tmp;
-
-	tmp = (unsigned char *)s;
-	while (n--)
-		*tmp++ = (unsigned char)c;
-	return (s);
-}
-void	*ft_calloc(size_t nmemb, size_t size)
-{
-	void			*mem;
-	unsigned char	*tmp;
-	size_t			n;
-
-	mem = malloc(nmemb * size);
-	if (!mem)
-		return (NULL);
-	tmp = (unsigned char *)mem;
-	n = nmemb * size;
-	while (n--)
-		*tmp++ = 0;
-	return (mem);
-}
-
-char	*ft_strchr(const char *s, int c)
-{
-	while (*s != '\0')
-	{
-		if (c == *s)
-			return ((char *)s);
-		s++;
-	}
-	if (c == *s)
-		return ((char *)s);
-	return ((void *)0);
-}
-
-static char	*ft_strchrnul(const char *s, int c)
-{
-	char	*ptr;
-
-	ptr = ft_strchr(s, c);
-	if (!ptr)
-		ptr = ft_strchr(s, '\0');
-	return (ptr);
-}
-
-char	*ft_strdup(const char *s)// CHANGE THIS TO STRNDUP
-{
-	int		size;
-	char	*mem;
-
-	size = ft_strlen(s) + 1;
-	mem = malloc(size);
-	if (!mem)
-		return (NULL);
-	ft_strlcpy(mem, s, size);
-	return (mem);
-}
 
 char	*ft_strjoin(char *s1, char *s2)
 {
@@ -117,7 +23,7 @@ char	*ft_strjoin(char *s1, char *s2)
 		return (NULL);
 	len1 = ft_strlen(s1);
 	len2 = ft_strlen(s2);
-	join = malloc(len1 + len2 + 1);
+	join = ft_calloc(1, len1 + len2 + 1);
 	i = 0;
 	if (join == NULL)
 		return (NULL);
@@ -135,7 +41,6 @@ char	*ft_strjoin(char *s1, char *s2)
 	free(s1);
 	return (join);
 }
-
 
 void	*ft_memmove(void *dest, const void *src, size_t n)
 {
@@ -162,7 +67,7 @@ char	*get_line(char *line, int fd)
 
 	buffer = ft_calloc(1, BUFFER_SIZE + 1);
 	bytes_read = read(fd, buffer, BUFFER_SIZE);
-	if (!line && bytes_read)
+	if (!line && bytes_read > 0)
 		line = ft_calloc(1, 1);
 	else if (bytes_read <= 0 && (!line || (ft_strchrnul(line, '\0') - ft_strchrnul(line, '\n')) <= 1))
 	{
@@ -171,14 +76,14 @@ char	*get_line(char *line, int fd)
 		return (NULL);
 	}
 	else if (strchr(line, '\n'))
-		ft_memmove(line, strchr(line, '\n') + 1, ft_strchrnul(line, '\0') - (strchr(line, '\n')));
-	while (bytes_read)
+		ft_memmove(line, strchr(line, '\n') + 1, ft_strchrnul(line, '\0') - (ft_strchrnul(line, '\n')));
+	while (bytes_read > 0)
 	{
 		line = ft_strjoin(line, buffer);
 		if (strchr(buffer, '\n'))
 			break ;
 		free(buffer);
-		buffer = calloc(1, BUFFER_SIZE + 1);//can use memset instead of reallocating
+		buffer = calloc(1, BUFFER_SIZE + 1);
 		bytes_read = read(fd, buffer, BUFFER_SIZE);
 	}
 	free(buffer);
@@ -195,7 +100,7 @@ char	*get_next_line(int fd)
 	line = get_line(line, fd);
 	if (!line)
 		return (NULL);
-	dup = strndup(line, ft_strchrnul(line, '\n') - line + 1);//implement strndup
+	dup = ft_strndup(line, ft_strchrnul(line, '\n') - line + 1);
 	return (dup);
 }
 
