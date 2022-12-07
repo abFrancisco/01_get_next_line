@@ -6,12 +6,14 @@
 /*   By: falves-b <falves-b@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/22 11:36:32 by falves-b          #+#    #+#             */
-/*   Updated: 2022/12/06 15:53:18 by falves-b         ###   ########.fr       */
+/*   Updated: 2022/12/07 13:32:36 by falves-b         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 #include <fcntl.h>
+
+
 
 size_t	ft_strlen(const char *s)
 {
@@ -43,7 +45,55 @@ size_t	ft_strlcpy(char *dst, const char *src, size_t size)
 	return (strlen);
 }
 
-char	*ft_strdup(const char *s)
+void	*ft_memset(void *s, int c, size_t n)
+{
+	unsigned char	*tmp;
+
+	tmp = (unsigned char *)s;
+	while (n--)
+		*tmp++ = (unsigned char)c;
+	return (s);
+}
+void	*ft_calloc(size_t nmemb, size_t size)
+{
+	void			*mem;
+	unsigned char	*tmp;
+	size_t			n;
+
+	mem = malloc(nmemb * size);
+	if (!mem)
+		return (NULL);
+	tmp = (unsigned char *)mem;
+	n = nmemb * size;
+	while (n--)
+		*tmp++ = 0;
+	return (mem);
+}
+
+char	*ft_strchr(const char *s, int c)
+{
+	while (*s != '\0')
+	{
+		if (c == *s)
+			return ((char *)s);
+		s++;
+	}
+	if (c == *s)
+		return ((char *)s);
+	return ((void *)0);
+}
+
+static char	*ft_strchrnul(const char *s, int c)
+{
+	char	*ptr;
+
+	ptr = ft_strchr(s, c);
+	if (!ptr)
+		ptr = ft_strchr(s, '\0');
+	return (ptr);
+}
+
+char	*ft_strdup(const char *s)// CHANGE THIS TO STRNDUP
 {
 	int		size;
 	char	*mem;
@@ -56,17 +106,7 @@ char	*ft_strdup(const char *s)
 	return (mem);
 }
 
-static char	*ft_strchrnul(const char *s, int c)
-{
-	char	*ptr;
-
-	ptr = strchr(s, c);
-	if (!ptr)
-		ptr = strchr(s, '\0');
-	return (ptr);
-}
-
-char	*ft_strjoin(char const *s1, char const *s2)
+char	*ft_strjoin(char *s1, char *s2)
 {
 	char	*join;
 	int		len1;
@@ -92,33 +132,10 @@ char	*ft_strjoin(char const *s1, char const *s2)
 		i++;
 	}
 	join[i] = '\0';
+	free(s1);
 	return (join);
 }
 
-size_t	ft_strlcat(char *dst, const char *src, size_t size)
-{
-	size_t	dst_len;
-	size_t	src_len;
-	size_t	i;
-
-	if (!dst && !size)
-		return (0);
-	dst_len = ft_strlen(dst);
-	src_len = ft_strlen(src);
-	i = 0;
-	if (size < dst_len + 1)
-		return (size + src_len);
-	if (size > dst_len + 1)
-	{
-		while (src[i] != '\0' && dst_len + 1 + i < size)
-		{
-			dst[dst_len + i] = src[i];
-			i++;
-		}
-	}
-	dst[dst_len + i] = '\0';
-	return (dst_len + src_len);
-}
 
 void	*ft_memmove(void *dest, const void *src, size_t n)
 {
@@ -141,37 +158,29 @@ void	*ft_memmove(void *dest, const void *src, size_t n)
 char	*get_line(char *line, int fd)
 {
 	char	*buffer;
-	int		i;
 	int		bytes_read;
-	int		offset;
 
-	i = 0;
-	offset = 0;
-	buffer = calloc(1, BUFFER_SIZE + 1);
+	buffer = ft_calloc(1, BUFFER_SIZE + 1);
 	bytes_read = read(fd, buffer, BUFFER_SIZE);
-	if (!bytes_read && (!line || (ft_strchrnul(line, '\0') - ft_strchrnul(line, '\n')) <= 1))
+	if (!line && bytes_read)
+		line = ft_calloc(1, 1);
+	else if (bytes_read <= 0 && (!line || (ft_strchrnul(line, '\0') - ft_strchrnul(line, '\n')) <= 1))
 	{
 		free(line);
 		free(buffer);
 		return (NULL);
 	}
-	else if (!line)
-		line = calloc(1, 100000000);
 	else if (strchr(line, '\n'))
-	{
 		ft_memmove(line, strchr(line, '\n') + 1, ft_strchrnul(line, '\0') - (strchr(line, '\n')));
-		offset = ft_strlen(line);
-		bzero(line + offset, BUFFER_SIZE - offset);
-	}
 	while (bytes_read)
 	{
-		ft_memmove((line + (i++ * BUFFER_SIZE)) + offset, buffer, BUFFER_SIZE);
+		line = ft_strjoin(line, buffer);
 		if (strchr(buffer, '\n'))
 			break ;
-		bzero(buffer, BUFFER_SIZE + 1);
+		free(buffer);
+		buffer = calloc(1, BUFFER_SIZE + 1);//can use memset instead of reallocating
 		bytes_read = read(fd, buffer, BUFFER_SIZE);
 	}
-	line[(i*BUFFER_SIZE) + offset] = '\0';
 	free(buffer);
 	return (line);
 }
@@ -186,11 +195,11 @@ char	*get_next_line(int fd)
 	line = get_line(line, fd);
 	if (!line)
 		return (NULL);
-	dup = strndup(line, ft_strchrnul(line, '\n') - line + 1);
+	dup = strndup(line, ft_strchrnul(line, '\n') - line + 1);//implement strndup
 	return (dup);
 }
 
-int main()
+/* int main()
 {
 	char	*filePath1 = "teste";
 	char	*line;
@@ -199,7 +208,7 @@ int main()
 
 	i = 0;
 	fd1 = open(filePath1, O_RDONLY);
-	while (i < 10)
+	while (i < 4)
 	{
 		line = get_next_line(fd1);
 		printf("line %i = %s\n", i, line);
@@ -208,4 +217,4 @@ int main()
 	}
 	close(fd1);
 	return (0);
-}
+} */
