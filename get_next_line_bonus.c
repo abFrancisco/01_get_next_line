@@ -6,7 +6,7 @@
 /*   By: falves-b <falves-b@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/07 15:29:10 by falves-b          #+#    #+#             */
-/*   Updated: 2022/12/09 14:34:04 by falves-b         ###   ########.fr       */
+/*   Updated: 2022/12/09 16:06:33 by falves-b         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,12 +75,12 @@ char	*get_line(char *line, int fd, int bytes_read)
 		free(buffer);
 		return (NULL);
 	}
-	else if (strchr(line, '\n'))
-		ft_memmove(line, strchr(line, '\n') + 1, nl_to_end(line));
+	else if (ft_strchr(line, '\n'))
+		ft_memmove(line, ft_strchr(line, '\n') + 1, nl_to_end(line));
 	while (bytes_read > 0)
 	{
 		line = ft_strjoin(line, buffer);
-		if (strchr(buffer, '\n'))
+		if (ft_strchr(buffer, '\n'))
 			break ;
 		free(buffer);
 		buffer = calloc(1, BUFFER_SIZE + 1);
@@ -93,13 +93,13 @@ char	*get_line(char *line, int fd, int bytes_read)
 char	*get_next_line(int fd)
 {	
 	static char	*line[FOPEN_MAX];
-	char		*dup;
+	char		*clean;
 
 	if (fd < 0 || fd > FOPEN_MAX || BUFFER_SIZE <= 0)
 		return (NULL);
 	line[fd] = get_line(line[fd], fd, 0);
 	if (!line[fd])
 		return (NULL);
-	dup = ft_strndup(line[fd], ft_strchrnul(line[fd], '\n') - line[fd] + 1);
-	return (dup);
+	clean = ft_strndup(line[fd], ft_strchrnul(line[fd], '\n') - line[fd] + 1);
+	return (clean);
 }

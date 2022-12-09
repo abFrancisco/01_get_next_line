@@ -6,17 +6,14 @@
 /*   By: falves-b <falves-b@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/07 15:29:00 by falves-b          #+#    #+#             */
-/*   Updated: 2022/12/09 13:27:16 by falves-b         ###   ########.fr       */
+/*   Updated: 2022/12/09 15:45:27 by falves-b         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef GET_NEXT_LINE_BONUS_H
 # define GET_NEXT_LINE_BONUS_H
-
 # include <stdlib.h>
 # include <unistd.h>
-# include <fcntl.h>
-# include <string.h>
 # include <stdio.h>
 # ifndef BUFFER_SIZE
 #  define BUFFER_SIZE 500
