@@ -6,7 +6,7 @@
 /*   By: falves-b <falves-b@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/07 15:29:00 by falves-b          #+#    #+#             */
-/*   Updated: 2022/12/07 15:29:32 by falves-b         ###   ########.fr       */
+/*   Updated: 2022/12/09 13:27:16 by falves-b         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ char	*ft_strchrnul(const char *s, int c);
 char	*ft_strndup(const char *s, size_t size);
 char	*ft_strjoin(char *s1, char *s2);
 void	*ft_memmove(void *dest, const void *src, size_t n);
-char	*get_line(char *line, int fd);
+char	*get_line(char *line, int fd, int bytes_read);
 char	*get_next_line(int fd);
 
 #endif
