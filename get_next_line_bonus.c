@@ -6,7 +6,7 @@
 /*   By: falves-b <falves-b@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/07 15:29:10 by falves-b          #+#    #+#             */
-/*   Updated: 2022/12/09 16:06:33 by falves-b         ###   ########.fr       */
+/*   Updated: 2022/12/21 13:39:41 by falves-b         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,7 @@ char	*get_line(char *line, int fd, int bytes_read)
 		if (ft_strchr(buffer, '\n'))
 			break ;
 		free(buffer);
-		buffer = calloc(1, BUFFER_SIZE + 1);
+		buffer = ft_calloc(1, BUFFER_SIZE + 1);
 		bytes_read = read(fd, buffer, BUFFER_SIZE);
 	}
 	free(buffer);

@@ -6,11 +6,12 @@
 /*   By: falves-b <falves-b@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/22 11:36:32 by falves-b          #+#    #+#             */
-/*   Updated: 2022/12/09 15:43:40 by falves-b         ###   ########.fr       */
+/*   Updated: 2022/12/21 14:22:46 by falves-b         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
+#include <string.h>
 
 char	*ft_strjoin(char *s1, char *s2)
 {
@@ -83,7 +84,7 @@ char	*get_line(char *line, int fd, int bytes_read)
 		if (ft_strchr(buffer, '\n'))
 			break ;
 		free(buffer);
-		buffer = calloc(1, BUFFER_SIZE + 1);
+		buffer = ft_calloc(1, BUFFER_SIZE + 1);
 		bytes_read = read(fd, buffer, BUFFER_SIZE);
 	}
 	free(buffer);

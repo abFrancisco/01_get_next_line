@@ -6,7 +6,7 @@
 /*   By: falves-b <falves-b@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/07 13:05:34 by falves-b          #+#    #+#             */
-/*   Updated: 2022/12/07 15:20:14 by falves-b         ###   ########.fr       */
+/*   Updated: 2022/12/21 14:31:46 by falves-b         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,6 @@ size_t	ft_strlen(const char *s)
 	return (i);
 }
 
-//i put memset inside calloc to save functions
 void	*ft_calloc(size_t nmemb, size_t size)
 {
 	void			*mem;
